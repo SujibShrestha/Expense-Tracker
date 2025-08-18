@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Wix+Madefor+Display&display=swap');
+
+/* Define custom fonts with Tailwind v4’s @theme */
+@theme {
+  --font-raleway: "Raleway", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-wix: "Wix Madefor Display", sans-serif;
+}
+* {
+  font-family: var(--font-wix);
+}
