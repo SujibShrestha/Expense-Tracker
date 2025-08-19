@@ -1,35 +1,36 @@
 import React, { useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
-import { FaRegEye , FaRegEyeSlash} from 'react-icons/fa6'
+import { useNavigate, Link } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { validateEmail } from "../utils/helper";
+
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [show, setShow] = useState(false); // For showing password
 
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
-const [error,setError]=useState(null)
-const [show,setShow]=useState(false) // For showing password
+  const navigate = useNavigate(); // For navigation after login
 
-//For navigating after login
-const navigate=useNavigate()
+  const handleToggle = () => {
+    setShow(!show);
+  };
 
-function handletoggle(){
-  setShow(!show);
-}
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-// Handle login form submit
-const handlelogin = async(e)=>{
-  e.preventDefault()
+    if (!validateEmail(email)) {
+      setError("Invalid email address");
+      return;
+    }
+    if (!password) {
+      setError("Please enter your password");
+      return;
+    }
 
-  if(!validateEmail(email)){
-    setError("Invalid email address")
-    return;
-  }
-  if(!password){
-    setError("Please enter your password")
-    return;
-  }
-  setError("");
-}
+    setError(""); // Clear previous errors
+
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen min-w-screen flex items-center justify-center bg-gray-100">
@@ -39,38 +40,50 @@ const handlelogin = async(e)=>{
           <p className="text-gray-600 font-[Roboto]">Login to your account</p>
         </div>
 
-        <form className="flex flex-col gap-4">
+        <form method="POST" onSubmit={handleLogin} className="flex flex-col gap-4">
+          {/* Email Field */}
           <div className="flex flex-col">
             <label htmlFor="email" className="mb-1 font-medium font-[Roboto]">
               Email
             </label>
-            <input 
+            <input
               type="email"
               id="email"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
+          {/* Password Field */}
           <div className="flex flex-col">
             <label htmlFor="password" className="mb-1 font-medium font-[Roboto]">
               Password
             </label>
             <div className="relative">
-            <input
-              type={show?"text":"password"}
-              id="password"
-
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-           <p className="absolute top-3 left-88" onClick={handletoggle}>{!show?<FaRegEyeSlash/>:<FaRegEye/>}</p></div>
-            {error && <p className="text-red-500 text-xs pt-3 pb-0 pl-1.5 font-raleway">{error}</p>}
+              <input
+                type={show ? "text" : "password"}
+                id="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <span
+                className="absolute top-3 right-3 cursor-pointer text-gray-600"
+                onClick={handleToggle}
+              >
+                {!show ? <FaRegEyeSlash /> : <FaRegEye />}
+              </span>
+            </div>
+            {error && (
+              <p className="text-red-500 text-xs pt-3 pl-1.5 font-raleway">{error}</p>
+            )}
           </div>
-         
 
+          {/* Submit Button */}
           <input
-          onClick={handlelogin}
             type="submit"
             value="Login"
             className="mt-4 w-full py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 cursor-pointer transition-colors"
@@ -78,11 +91,13 @@ const handlelogin = async(e)=>{
         </form>
 
         <p className="mt-4 text-center text-gray-500 font-[Roboto]">
-          Don't have an account? <span className="text-blue-500 cursor-pointer"><Link to="/register">Sign up</Link></span>
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-500 cursor-pointer">
+            Sign up
+          </Link>
         </p>
-      </div> 
+      </div>
     </div>
-    
   );
 };
 
