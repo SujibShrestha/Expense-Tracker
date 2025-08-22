@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useNavigate } from "react-router-dom";
 import userIcon from "../assets/user-line.svg";
 import logout from "../assets/logout-box-line.svg";
 import dashboard from "../assets/dashboard-line.svg";
@@ -8,7 +8,25 @@ import { Link,  } from "react-router-dom"
 
 const Sidebar = () => {
 
-  
+
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try {
+    const res = await fetch("http://localhost/Web2/Expense-Tracker/backend/logout.php", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    if (data.status === "success") {
+      navigate("/login"); // redirect to login page
+    }
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+};
+
 
   return (
     <div className="min-h-screen fixed w-64 bg-white shadow-lg flex flex-col">
@@ -31,10 +49,10 @@ const Sidebar = () => {
           <img src={wallet} className="h-5 w-5" alt="" />
           Expenses
         </li></Link>
-       <Link to={"/login"}><li  className=" flex items-center gap-2 hover:bg-purple-700 hover:text-white p-2 rounded cursor-pointer"> 
+       <li onClick={handleLogout}  className=" flex items-center gap-2 hover:bg-purple-700 hover:text-white p-2 rounded cursor-pointer"> 
           <img src={logout} className="h-5 w-5" alt="" />
           Logout
-        </li></Link>
+        </li>
       </ul>
     </div>
   );

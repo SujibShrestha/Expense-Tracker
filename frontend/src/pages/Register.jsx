@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { validateEmail } from "../utils/helper";
 const Register = () => {
@@ -9,27 +9,45 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
-
+  const navigate = useNavigate();
   function handletoggle() {
     setShow(!show);
   }
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateEmail(email)) {
-      setError("Invalid email address");
-      return;
+  if (!validateEmail(email)) {
+    setError("Invalid email address");
+    return;
+  }
+  if (!password) {
+    setError("Please enter your password");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost/Web2/Expense-Tracker/backend/register.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: fullname,
+        email: email,
+        password: password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.status === "success") {
+      navigate("/"); // redirect after success
+    } else {
+      setError(data.message);
     }
-    if (!password) {
-      setError("Please enter your password");
-      return;
-    }
-
-    setError(""); // Clear previous errors
-
-    navigate("/");
-  };
+  } catch (err) {
+    setError("Failed to connect to server");
+  }
+};
 
   return (
     <div className="min-h-screen min-w-screen flex items-center justify-center bg-gray-100">
@@ -42,6 +60,7 @@ const Register = () => {
         </div>
 
         <form
+         action="register.php"
           method="POST"
           onSubmit={handleLogin}
           className="flex flex-col gap-4"
@@ -54,9 +73,12 @@ const Register = () => {
               Fullname
             </label>
             <input
+              name="name"
               type="text"
               id="name"
               placeholder="Enter your name"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -66,9 +88,12 @@ const Register = () => {
               Email
             </label>
             <input
+              name="email"
               type="email"
               id="email"
               placeholder="Enter your email"
+              value={email} // ✅ connect to state
+              onChange={(e) => setEmail(e.target.value)} // ✅ update state
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
@@ -82,9 +107,12 @@ const Register = () => {
             </label>
             <div className="relative">
               <input
+                name="password"
                 type={show ? "text" : "password"}
                 id="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <p className="absolute top-3 left-88" onClick={handletoggle}>

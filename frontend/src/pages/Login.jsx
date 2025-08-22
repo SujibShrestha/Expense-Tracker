@@ -7,9 +7,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [show, setShow] = useState(false); // For showing password
+  const [show, setShow] = useState(false); // Toggle password visibility
 
-  const navigate = useNavigate(); // For navigation after login
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setShow(!show);
@@ -18,6 +18,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Basic validation
     if (!validateEmail(email)) {
       setError("Invalid email address");
       return;
@@ -27,9 +28,28 @@ const Login = () => {
       return;
     }
 
-    setError(""); // Clear previous errors
+    try {
+      const res = await fetch("http://localhost/Web2/Expense-Tracker/backend/login.php", {
+        method: "POST",
+         credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    navigate("/");
+      const data = await res.json();
+
+      if (data.status === "success") {
+        // Save user to localStorage
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Redirect to homepage or dashboard
+        navigate("/");
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError("Failed to connect to server");
+    }
   };
 
   return (
@@ -40,7 +60,7 @@ const Login = () => {
           <p className="text-gray-600 font-[Roboto]">Login to your account</p>
         </div>
 
-        <form method="POST" onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
           {/* Email Field */}
           <div className="flex flex-col">
             <label htmlFor="email" className="mb-1 font-medium font-[Roboto]">
@@ -91,7 +111,7 @@ const Login = () => {
         </form>
 
         <p className="mt-4 text-center text-gray-500 font-[Roboto]">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/register" className="text-blue-500 cursor-pointer">
             Sign up
           </Link>
