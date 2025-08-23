@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [savings, setSavings] = useState(0);
   const [expenses, setExpenses] = useState(0);
   const [newAmount, setNewAmount] = useState("");
+
   const navigate = useNavigate();
   
 
@@ -41,12 +42,31 @@ export default function Dashboard() {
     fetchDashboard();
   }, [navigate]);
 
-  const handleSave = () => {
-    if (newAmount) {
-      setAmount(newAmount);
+  const handleSave = async () => {
+  if (!newAmount) return;
+
+  try {
+    const res = await fetch("http://localhost/Web2/Expense-Tracker/backend/updateAmount.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ amount: newAmount }),
+    });
+
+    const data = await res.json();
+
+    if (data.status === "success") {
+      setAmount(data.total_amount); // update state with DB value
+      setSavings(data.total_amount - expenses); // recalc savings
       setNewAmount("");
+    } else {
+      alert(data.message);
     }
-  };
+  } catch (err) {
+    console.error("Error updating amount:", err);
+  }
+};
+
 
   return (
     <div className="ml-65 min-h-[90vh] p-4 w-[85%]">
@@ -88,7 +108,7 @@ export default function Dashboard() {
 
       {/* Pie Chart Card */}
       <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-        <PieChartCard />
+        <PieChartCard expenses={expenses} savings={savings} amount={amount}/>
         <ExpenseList />
       </div>
     </div>

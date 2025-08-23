@@ -1,5 +1,5 @@
-import React from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card" // relative path
+import React from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card"; // relative path
 import {
   PieChart,
   Pie,
@@ -7,17 +7,21 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
+} from "recharts";
 
-const data = [
-  { name: "Income", value: 5200 },
-  { name: "Saving", value: 2800 },
-  { name: "Expenses", value: 2800 },
-]
+const COLORS = ["#4ade80", "#60a5fa", "#f87171"]; // green, blue, red
 
-const COLORS = ["#4ade80", "#60a5fa", "#f87171"] // green, blue, red
-
-export default function PieChartCard({ title = "Monthly Overview" }) {
+export default function PieChartCard({
+  title = "Monthly Overview",
+  savings,
+  expenses,
+  amount,
+}) {
+  const data = [
+    { name: "Total Amount", value: amount},
+    { name: "Saving", value: savings },
+    { name: "Expenses", value: expenses },
+  ];
   return (
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-200">
       <CardHeader>
@@ -45,5 +49,5 @@ export default function PieChartCard({ title = "Monthly Overview" }) {
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

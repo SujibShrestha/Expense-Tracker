@@ -6,7 +6,7 @@ import dashboard from "../assets/dashboard-line.svg";
 import wallet from "../assets/wallet-line.svg";
 import { Link,  } from "react-router-dom"
 
-const Sidebar = () => {
+const Sidebar = ({username}) => {
 
 
 const navigate = useNavigate();
@@ -37,7 +37,7 @@ const handleLogout = async () => {
           src={userIcon}
           alt="User"
         />
-        <p className="mt-3 font-semibold text-sm">username</p>
+        <p className="mt-3 font-semibold text-sm">{username}</p>
       </div>
 
       {/* Navigation */}
